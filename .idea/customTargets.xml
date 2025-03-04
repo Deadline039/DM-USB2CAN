@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CLionExternalBuildManager">
+    <target id="2eb57506-381f-4e70-acf1-8998f9fe8d8f" name="DM-USB2CAN" defaultType="TOOL">
+      <configuration id="43d66fe1-8eb6-4fb6-ab6c-e99807845cd7" name="DM-USB2CAN" toolchainName="GNU-ARM-Toolchain" />
+    </target>
+  </component>
+</project>

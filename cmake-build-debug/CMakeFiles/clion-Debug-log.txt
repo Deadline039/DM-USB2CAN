@@ -1,0 +1,19 @@
+"D:\Develop\JetBrains\CLion 2024.3\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=D:/Develop/JetBrains/CLion 2024.3/bin/ninja/win/x64/ninja.exe" -G Ninja -S E:\Embedded\DM-USB2CAN\DM-USB2CAN -B E:\Embedded\DM-USB2CAN\DM-USB2CAN\cmake-build-debug
+-- The C compiler identification is GNU 10.3.1
+-- The CXX compiler identification is GNU 10.3.1
+-- The ASM compiler identification is GNU
+-- Found assembler: D:/Develop/gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gcc.exe
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: D:/Develop/gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gcc.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: D:/Develop/gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-g++.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Minimal optimization, debug info included
+-- Configuring done (0.9s)
+-- Generating done (0.0s)
+-- Build files have been written to: E:/Embedded/DM-USB2CAN/DM-USB2CAN/cmake-build-debug
