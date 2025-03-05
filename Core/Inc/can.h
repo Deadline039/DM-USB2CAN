@@ -48,3 +48,4 @@ void MX_CAN1_Init(void);
 #endif
 
 #endif /* __CAN_H__ */
+

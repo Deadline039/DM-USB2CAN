@@ -43,6 +43,8 @@ void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN Prototypes */
 
 uint32_t UART_Read(void *buf, uint32_t len);
+uint32_t UART_TxWrite(const void *buf, uint32_t len);
+void UART_TxSend(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

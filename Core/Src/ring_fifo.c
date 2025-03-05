@@ -5,19 +5,6 @@
 #define min(a, b)       ((a) > (b) ? (b) : (a))
 #define fifo_max_depth  (0xffffffff >> 1)
 
-/* 环形缓冲区结构 */
-struct ring_fifo_t {
-    volatile uint32_t   head;           /* 消费者指针 */
-    volatile uint32_t   tail;           /* 生产者指针 */
-
-    uint32_t            size;           /* 缓冲区的大小 */
-    uint32_t            mask;           /* 缓冲区的大小掩码 */
-
-    void                *buf;           /* 缓冲区指针 */
-    uint32_t            is_dynamic;     /* 是否使用了动态内存 */
-
-    enum ring_fifo_type type;           /* fifo的类型 */
-};
 
 static inline uint32_t is_pow_of_2(uint32_t n)
 {

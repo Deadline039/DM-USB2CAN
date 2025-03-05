@@ -20,7 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 
-
 /* USER CODE BEGIN 0 */
 #include "ring_fifo.h"
 
@@ -30,6 +29,11 @@ typedef struct
   struct ring_fifo_t *rx_fifo;
   uint8_t rx_fifo_buf[1024];
   uint32_t head_ptr;
+
+  struct ring_fifo_t *tx_fifo;
+  uint8_t tx_fifo_buf[4096];
+
+  volatile uint32_t tc_flag;
 } UART_FIFO_t;
 
 static UART_FIFO_t uart_rt;
@@ -67,11 +71,12 @@ void MX_USART2_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART2_Init 2 */
-  uart_rt.head_ptr = 0;
   uart_rt.rx_fifo = ring_fifo_init(uart_rt.rx_fifo_buf,
                                    sizeof(uart_rt.rx_fifo_buf) / sizeof(uart_rt.rx_fifo_buf[0]),
                                    RF_TYPE_STREAM);
-
+  uart_rt.tx_fifo = ring_fifo_init(uart_rt.tx_fifo_buf,
+                                   sizeof(uart_rt.tx_fifo_buf) / sizeof(uart_rt.tx_fifo_buf[0]),
+                                   RF_TYPE_STREAM);
   /* USER CODE END USART2_Init 2 */
 
 }
@@ -85,6 +90,15 @@ void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
   {
     /* USER CODE BEGIN USART2_MspInit 0 */
     uart_rt.head_ptr = 0;
+    uart_rt.tc_flag = 1;
+
+    uart_rt.tx_fifo->head = 0;
+    uart_rt.tx_fifo->tail = 0;
+
+    uart_rt.rx_fifo->head = 0;
+    uart_rt.rx_fifo->tail = 0;
+
+
     /* USER CODE END USART2_MspInit 0 */
 
     /** Initializes the peripherals clock
@@ -186,15 +200,13 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 
 /* USER CODE BEGIN 1 */
 
-static inline void UART_WriteRxFIFO(const void *data, uint32_t len)
+static inline uint32_t UART_WriteRxFIFO(const void *data, uint32_t len)
 {
   uint32_t copied;
-  if ((NULL == data) || (0 == len)) { return; }
+  if ((NULL == data) || (0 == len)) { return 0; }
 
   copied = ring_fifo_write(uart_rt.rx_fifo, data, len);
-  if (copied != len)
-  {
-  }
+  return copied;
 }
 
 uint32_t UART_Read(void *buf, uint32_t len)
@@ -202,6 +214,42 @@ uint32_t UART_Read(void *buf, uint32_t len)
   if ((NULL == buf) || (0 == len)) { return 0; }
 
   return ring_fifo_read(uart_rt.rx_fifo, buf, len);
+}
+
+uint32_t UART_TxWrite(const void *data, uint32_t len)
+{
+  uint32_t copied;
+  if ((NULL == data) || (0 == len)) { return 0; }
+
+  copied = ring_fifo_write(uart_rt.tx_fifo, data, len);
+  return copied;
+}
+
+static inline uint32_t uart1_read_tx_fifo(void *buf, uint32_t len)
+{
+  if ((NULL == buf) || (0 == len)) { return 0; }
+
+  return ring_fifo_read(uart_rt.tx_fifo, buf, len);
+}
+
+
+void UART_TxSend(void)
+{
+  uint32_t len;
+  /* Notice static */
+  static uint8_t buf[256];
+
+  if (0 == uart_rt.tc_flag)
+  {
+    return;
+  }
+
+  len = uart1_read_tx_fifo(buf, sizeof(buf));
+  if (len > 0)
+  {
+    uart_rt.tc_flag = 0;
+    HAL_UART_Transmit_DMA(&huart2, buf, len);
+  }
 }
 
 
@@ -340,6 +388,12 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
       __HAL_UNLOCK(huart);
     }
   }
+}
+
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  uart_rt.tc_flag = 1;
 }
 
 /* USER CODE END 1 */

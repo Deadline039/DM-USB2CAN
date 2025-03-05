@@ -261,15 +261,10 @@ void DM_USB_SendCAN_Message(void)
  */
 void DM_USB_Process(uint8_t *data, uint32_t len)
 {
+  UART_TxWrite(data, len);
+
   if (data[0] != 0x55)
   {
-    /* 普通数据 转发 */
-    while (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_TC) == RESET)
-    {
-      /* 等待上次发送完毕 */
-    }
-
-    HAL_UART_Transmit_DMA(&huart2, data, len);
     return;
   }
 

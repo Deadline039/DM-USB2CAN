@@ -102,7 +102,8 @@ uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-
+/* 发送状态标志, 1 为发送完毕 */
+static uint8_t USB_CDC_TransmitCplt = 1;
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -163,7 +164,7 @@ static int8_t CDC_Init_FS(void)
 {
   /* USER CODE BEGIN 3 */
   /* Set Application Buffers */
-  USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
+  USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, sizeof(UserTxBufferFS));
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
   return (USBD_OK);
   /* USER CODE END 3 */
@@ -291,10 +292,13 @@ uint8_t CDC_Transmit_FS(uint8_t *Buf, uint16_t Len)
   uint8_t result = USBD_OK;
   /* USER CODE BEGIN 7 */
   USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef *)hUsbDeviceFS.pClassData;
-  if (hcdc->TxState != 0)
+  while (USB_CDC_TransmitCplt == 0)
   {
-    return USBD_BUSY;
+
   }
+
+  USB_CDC_TransmitCplt = 0;
+
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
   result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
   /* USER CODE END 7 */
@@ -320,13 +324,16 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   UNUSED(Buf);
   UNUSED(Len);
   UNUSED(epnum);
+
+
+  USB_CDC_TransmitCplt = 1;
   /* USER CODE END 13 */
   return result;
 }
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
 
-extern uint8_t UART_ReceiveBuffer[256];
+uint8_t UART_ReceiveBuffer[1024];
 
 /**
   * @brief  ComPort_Config

@@ -59,7 +59,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t UART_ReceiveBuffer[256];
+
 /* USER CODE END 0 */
 
 /**
@@ -97,7 +97,7 @@ int main(void)
   MX_CAN1_Init();
   MX_USB_DEVICE_Init();
 
-  static uint8_t rxBuffer[256];
+  static uint8_t rxBuffer[1024];
   uint32_t rxLength = 0;
 
   /* USER CODE END 2 */
@@ -120,6 +120,7 @@ int main(void)
     {
       CDC_Transmit_FS(rxBuffer, rxLength);
     }
+    UART_TxSend();
 
   }
   /* USER CODE END 3 */
