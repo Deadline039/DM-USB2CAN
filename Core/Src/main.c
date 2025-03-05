@@ -100,6 +100,8 @@ int main(void)
   static uint8_t rxBuffer[1024];
   uint32_t rxLength = 0;
 
+  uint32_t startTime = HAL_GetTick();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -108,9 +110,12 @@ int main(void)
   {
     if (g_send_times)
     {
-      DM_USB_SendCAN_Message();
-      --g_send_times;
-      HAL_Delay(g_send_time_gap);
+      if (HAL_GetTick() - startTime > g_send_time_gap)
+      {
+        DM_USB_SendCAN_Message();
+        --g_send_times;
+        startTime = HAL_GetTick();
+      }
     }
     /* USER CODE END WHILE */
 
