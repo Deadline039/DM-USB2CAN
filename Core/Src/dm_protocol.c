@@ -138,6 +138,7 @@ static void USB_Report_TxSuccess(void)
   memcpy(&USB_ReportData.data, &CAN_TxData, CAN_TxHeader.DLC);
 
   CDC_Transmit_FS((uint8_t *)&USB_ReportData, sizeof(USB_ReportData));
+  HAL_GPIO_TogglePin(CAN_TX_LED_GPIO_Port, CAN_TX_LED_Pin);
 }
 
 /**
