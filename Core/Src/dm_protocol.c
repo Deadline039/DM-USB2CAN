@@ -54,9 +54,9 @@ typedef struct __packed
   uint32_t id;            /*!< ID 号 */
   uint8_t data[8];        /*!< 数据 */
   uint8_t end;            /*!< 帧尾 0x55 */
-} DM_USB_Report_Data_t;
+} DM_USB_ReportData_t;
 
-static DM_USB_Report_Data_t USB_Report_Data = {
+static DM_USB_ReportData_t USB_ReportData = {
     .header = 0xAA, .end = 0x55};
 
 static CAN_RxHeaderTypeDef CAN_RxHeader;
@@ -103,14 +103,14 @@ static void USB_CAN_SetBaudRate(uint8_t index)
  */
 static void USB_Report_RxMessage(void)
 {
-  USB_Report_Data.cmd = DM_RX_SUCCESS;
-  USB_Report_Data.dataLength = CAN_RxHeader.DLC;
-  USB_Report_Data.idType = CAN_RxHeader.IDE == CAN_ID_STD ? 0 : 1;
-  USB_Report_Data.dataType = CAN_RxHeader.RTR == CAN_RTR_DATA ? 0 : 1;
-  USB_Report_Data.id = CAN_RxHeader.IDE == CAN_ID_STD ? CAN_RxHeader.StdId : CAN_RxHeader.ExtId;
-  memcpy(&USB_Report_Data.data, &CAN_RxData, CAN_RxHeader.DLC);
+  USB_ReportData.cmd = DM_RX_SUCCESS;
+  USB_ReportData.dataLength = CAN_RxHeader.DLC;
+  USB_ReportData.idType = CAN_RxHeader.IDE == CAN_ID_STD ? 0 : 1;
+  USB_ReportData.dataType = CAN_RxHeader.RTR == CAN_RTR_DATA ? 0 : 1;
+  USB_ReportData.id = CAN_RxHeader.IDE == CAN_ID_STD ? CAN_RxHeader.StdId : CAN_RxHeader.ExtId;
+  memcpy(&USB_ReportData.data, &CAN_RxData, CAN_RxHeader.DLC);
 
-  CDC_Transmit_FS((uint8_t *)&USB_Report_Data, sizeof(USB_Report_Data));
+  CDC_Transmit_FS((uint8_t *)&USB_ReportData, sizeof(USB_ReportData));
 }
 
 /**
@@ -119,9 +119,9 @@ static void USB_Report_RxMessage(void)
  */
 static void USB_Report_RxFailed(void)
 {
-  USB_Report_Data.cmd = DM_RX_FAILED;
+  USB_ReportData.cmd = DM_RX_FAILED;
 
-  CDC_Transmit_FS((uint8_t *)&USB_Report_Data, sizeof(USB_Report_Data));
+  CDC_Transmit_FS((uint8_t *)&USB_ReportData, sizeof(USB_ReportData));
 }
 
 /**
@@ -130,14 +130,14 @@ static void USB_Report_RxFailed(void)
  */
 static void USB_Report_TxSuccess(void)
 {
-  USB_Report_Data.cmd = DM_TX_SUCCESS;
-  USB_Report_Data.dataLength = CAN_TxHeader.DLC;
-  USB_Report_Data.idType = CAN_TxHeader.IDE == CAN_ID_STD ? 0 : 1;
-  USB_Report_Data.dataType = CAN_TxHeader.RTR == CAN_RTR_DATA ? 0 : 1;
-  USB_Report_Data.id = CAN_TxHeader.IDE == CAN_ID_STD ? CAN_TxHeader.StdId : CAN_TxHeader.ExtId;
-  memcpy(&USB_Report_Data.data, &CAN_TxData, CAN_TxHeader.DLC);
+  USB_ReportData.cmd = DM_TX_SUCCESS;
+  USB_ReportData.dataLength = CAN_TxHeader.DLC;
+  USB_ReportData.idType = CAN_TxHeader.IDE == CAN_ID_STD ? 0 : 1;
+  USB_ReportData.dataType = CAN_TxHeader.RTR == CAN_RTR_DATA ? 0 : 1;
+  USB_ReportData.id = CAN_TxHeader.IDE == CAN_ID_STD ? CAN_TxHeader.StdId : CAN_TxHeader.ExtId;
+  memcpy(&USB_ReportData.data, &CAN_TxData, CAN_TxHeader.DLC);
 
-  CDC_Transmit_FS((uint8_t *)&USB_Report_Data, sizeof(USB_Report_Data));
+  CDC_Transmit_FS((uint8_t *)&USB_ReportData, sizeof(USB_ReportData));
 }
 
 /**
@@ -146,14 +146,14 @@ static void USB_Report_TxSuccess(void)
  */
 static void USB_Report_TxFailed(void)
 {
-  USB_Report_Data.cmd = DM_TX_FAILED;
-  USB_Report_Data.dataLength = CAN_TxHeader.DLC;
-  USB_Report_Data.idType = CAN_TxHeader.IDE == CAN_ID_STD ? 0 : 1;
-  USB_Report_Data.dataType = CAN_TxHeader.RTR == CAN_RTR_DATA ? 0 : 1;
-  USB_Report_Data.id = CAN_TxHeader.IDE == CAN_ID_STD ? CAN_TxHeader.StdId : CAN_TxHeader.ExtId;
-  memcpy(&USB_Report_Data.data, &CAN_TxData, CAN_TxHeader.DLC);
+  USB_ReportData.cmd = DM_TX_FAILED;
+  USB_ReportData.dataLength = CAN_TxHeader.DLC;
+  USB_ReportData.idType = CAN_TxHeader.IDE == CAN_ID_STD ? 0 : 1;
+  USB_ReportData.dataType = CAN_TxHeader.RTR == CAN_RTR_DATA ? 0 : 1;
+  USB_ReportData.id = CAN_TxHeader.IDE == CAN_ID_STD ? CAN_TxHeader.StdId : CAN_TxHeader.ExtId;
+  memcpy(&USB_ReportData.data, &CAN_TxData, CAN_TxHeader.DLC);
 
-  CDC_Transmit_FS((uint8_t *)&USB_Report_Data, sizeof(USB_Report_Data));
+  CDC_Transmit_FS((uint8_t *)&USB_ReportData, sizeof(USB_ReportData));
 }
 
 /**
@@ -161,8 +161,8 @@ static void USB_Report_TxFailed(void)
  */
 static void USB_Report_Heartbeat(void)
 {
-  USB_Report_Data.cmd = DM_HEARTBEAT;
-  CDC_Transmit_FS((uint8_t *)&USB_Report_Data, sizeof(DM_USB_Report_Data_t));
+  USB_ReportData.cmd = DM_HEARTBEAT;
+  CDC_Transmit_FS((uint8_t *)&USB_ReportData, sizeof(DM_USB_ReportData_t));
 }
 
 

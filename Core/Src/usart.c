@@ -27,11 +27,11 @@
 typedef struct
 {
   struct ring_fifo_t *rx_fifo;
-  uint8_t rx_fifo_buf[1024];
+  uint8_t rx_fifo_buf[16384];
   uint32_t head_ptr;
 
   struct ring_fifo_t *tx_fifo;
-  uint8_t tx_fifo_buf[4096];
+  uint8_t tx_fifo_buf[16384];
 
   volatile uint32_t tc_flag;
 } UART_FIFO_t;
@@ -237,7 +237,7 @@ void UART_TxSend(void)
 {
   uint32_t len;
   /* Notice static */
-  static uint8_t buf[256];
+  static uint8_t buf[4096];
 
   if (0 == uart_rt.tc_flag)
   {

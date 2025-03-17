@@ -97,7 +97,7 @@ int main(void)
   MX_CAN1_Init();
   MX_USB_DEVICE_Init();
 
-  static uint8_t rxBuffer[1024];
+  static uint8_t rxBuffer[2048];
   uint32_t rxLength = 0;
 
   uint32_t startTime = HAL_GetTick();
