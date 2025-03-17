@@ -43,3 +43,4 @@
 JLinkLog.txt
 
 # Other Files
+cmake-build-debug/
