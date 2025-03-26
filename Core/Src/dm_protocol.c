@@ -9,6 +9,7 @@
 
 #include "can.h"
 #define CAN_SEND_TIMEOUT 1000
+#define LED_TOGGLE_TIMEGAP_MS 25
 
 #include <stdbool.h>
 
@@ -93,7 +94,6 @@ static void USB_CAN_SetBaudRate(uint8_t index)
   }
 
   CAN1->BTR = CAN_BaudRateConfig[index];
-  __HAL_RCC_CAN1_FORCE_RESET();
 }
 
 
@@ -130,6 +130,7 @@ static void USB_Report_RxFailed(void)
  */
 static void USB_Report_TxSuccess(void)
 {
+  static uint32_t lastToggleTime = 0;
   USB_ReportData.cmd = DM_TX_SUCCESS;
   USB_ReportData.dataLength = CAN_TxHeader.DLC;
   USB_ReportData.idType = CAN_TxHeader.IDE == CAN_ID_STD ? 0 : 1;
@@ -138,7 +139,12 @@ static void USB_Report_TxSuccess(void)
   memcpy(&USB_ReportData.data, &CAN_TxData, CAN_TxHeader.DLC);
 
   CDC_Transmit_FS((uint8_t *)&USB_ReportData, sizeof(USB_ReportData));
-  HAL_GPIO_TogglePin(CAN_TX_LED_GPIO_Port, CAN_TX_LED_Pin);
+
+  if (HAL_GetTick() - lastToggleTime > LED_TOGGLE_TIMEGAP_MS)
+  {
+    HAL_GPIO_TogglePin(CAN_TX_LED_GPIO_Port, CAN_TX_LED_Pin);
+    lastToggleTime = HAL_GetTick();
+  }
 }
 
 /**
@@ -311,6 +317,7 @@ void DM_USB_Process(uint8_t *data, uint32_t len)
   */
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
+  static uint32_t lastToggleTime = 0;
   if (HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN_RxHeader, CAN_RxData) == HAL_OK)
   {
     USB_Report_RxMessage();
@@ -319,5 +326,10 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   {
     USB_Report_RxFailed();
   }
-  HAL_GPIO_TogglePin(CAN_RX_LED_GPIO_Port, CAN_RX_LED_Pin);
+
+  if (HAL_GetTick() - lastToggleTime > LED_TOGGLE_TIMEGAP_MS)
+  {
+    HAL_GPIO_TogglePin(CAN_RX_LED_GPIO_Port, CAN_RX_LED_Pin);
+    lastToggleTime = HAL_GetTick();
+  }
 }
