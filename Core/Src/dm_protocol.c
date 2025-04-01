@@ -93,9 +93,11 @@ static void USB_CAN_SetBaudRate(uint8_t index)
     return;
   }
 
+  HAL_CAN_Init(&hcan1);
   CAN1->BTR = CAN_BaudRateConfig[index];
+  HAL_CAN_Start(&hcan1);
+  HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING | CAN_IT_TX_MAILBOX_EMPTY);
 }
-
 
 /**
  * @brief 向上位机上报 CAN 消息
