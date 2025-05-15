@@ -35,6 +35,7 @@
 #include "stm32l4xx_hal.h"
 
 /* USER CODE BEGIN INCLUDE */
+extern volatile uint8_t g_usb_dev_state;
 
 /* USER CODE END INCLUDE */
 

@@ -291,10 +291,15 @@ uint8_t CDC_Transmit_FS(uint8_t *Buf, uint16_t Len)
 {
   uint8_t result = USBD_OK;
   /* USER CODE BEGIN 7 */
+  if (g_usb_dev_state == 0)
+  {
+    /* USB 没有打开 */
+    return USBD_OK;
+  }
   USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef *)hUsbDeviceFS.pClassData;
   while (USB_CDC_TransmitCplt == 0)
   {
-
+    /* 等待发送完成 */
   }
 
   USB_CDC_TransmitCplt = 0;
